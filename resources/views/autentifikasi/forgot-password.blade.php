@@ -397,11 +397,11 @@
             </div>
         @endif
 
-        @if(session('reset_url'))
+        @if(session('reset_url') && config('app.debug'))
             <div class="demo-link-box">
-                <strong>🔗 Tautan Reset Password Siap Digunakan:</strong><br>
-                <span>Sistem telah menyiapkan formulir pembaruan sandi untuk Anda:</span><br>
-                <a href="{{ session('reset_url') }}">Klik di sini untuk Reset Password Baru &rarr;</a>
+                <strong>🔒 Simulasi Pengujian / Debug Mode:</strong><br>
+                <span>Pada server produksi, tautan dikirim langsung ke email kantor Admin HES. Untuk pengujian sidang tanpa SMTP, Anda dapat membuka tautan simulasi berikut:</span><br>
+                <a href="{{ session('reset_url') }}">Buka Formulir Pembaruan Kata Sandi &rarr;</a>
             </div>
         @endif
 

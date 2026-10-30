@@ -193,9 +193,12 @@ class AuthController extends Controller
             Log::info('Email reset password log mode / local: ' . $e->getMessage());
         }
 
+        // Tautan hanya dilampirkan jika dalam mode pengujian lokal / debug untuk demonstrasi
+        $debugResetUrl = config('app.debug') ? $resetUrl : null;
+
         return back()->with([
-            'success' => 'Tautan pembaruan kata sandi telah berhasil diproses.',
-            'reset_url' => $resetUrl,
+            'success' => 'Tautan pembaruan kata sandi telah dikirim ke alamat email resmi terdaftar.',
+            'reset_url' => $debugResetUrl,
         ]);
     }
 
