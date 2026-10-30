@@ -12,9 +12,10 @@
             --primary: #0284c7;
             --primary-hover: #0369a1;
             --accent-teal: #0d9488;
-            --bg-page: #f8fafc;
+            --accent-blue: #0ea5e9;
+            --bg-ocean: #0e2439;
             --card-bg: #ffffff;
-            --card-border: #e2e8f0;
+            --card-border: rgba(255, 255, 255, 0.85);
             --text-heading: #0f172a;
             --text-body: #334155;
             --text-muted: #64748b;
@@ -31,61 +32,72 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
+        /* Background: Biru tenang yang pas (tidak terlalu kuat, tidak terlalu lembut) */
         body {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: var(--bg-page);
+            background-color: var(--bg-ocean);
+            background-image: 
+                radial-gradient(ellipse at 15% 15%, rgba(13, 148, 136, 0.32) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 85%, rgba(2, 132, 199, 0.32) 0%, transparent 55%),
+                radial-gradient(circle at 50% 50%, rgba(14, 165, 233, 0.16) 0%, transparent 65%);
             color: var(--text-heading);
             padding: 1.5rem;
             position: relative;
             overflow-x: hidden;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(13, 148, 136, 0.08) 0px, transparent 40%),
-                radial-gradient(circle at 90% 90%, rgba(2, 132, 199, 0.08) 0px, transparent 45%),
-                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0px, transparent 60%);
         }
 
-        /* Subtle Geometric Background Grid */
+        /* Grid Halus Geometris */
         body::before {
             content: "";
             position: fixed;
             inset: 0;
             pointer-events: none;
             background-image: 
-                linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
-            background-size: 36px 36px;
-            mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 40%, transparent 85%);
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+            background-size: 38px 38px;
+            mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 35%, transparent 85%);
             z-index: 0;
         }
 
-        /* Ambient Glow Highlights */
+        /* Pendaran Cahaya Dinamis (Ambient Glow) Toska & Biru Tenang */
         .ambient-glow {
             position: fixed;
-            width: 500px;
-            height: 500px;
             border-radius: 50%;
-            filter: blur(130px);
-            opacity: 0.65;
+            filter: blur(125px);
             pointer-events: none;
             z-index: 0;
+            opacity: 0.7;
+            animation: floatGlow 14s ease-in-out infinite alternate;
         }
 
-        .ambient-glow-1 {
-            top: -100px;
-            left: -100px;
-            background: rgba(13, 148, 136, 0.12);
+        .ambient-glow-teal {
+            width: 480px;
+            height: 480px;
+            top: -80px;
+            left: -80px;
+            background: radial-gradient(circle, rgba(13, 148, 136, 0.45), rgba(2, 132, 199, 0.25));
         }
 
-        .ambient-glow-2 {
-            bottom: -120px;
-            right: -120px;
-            background: rgba(2, 132, 199, 0.12);
+        .ambient-glow-blue {
+            width: 520px;
+            height: 520px;
+            bottom: -100px;
+            right: -100px;
+            background: radial-gradient(circle, rgba(2, 132, 199, 0.45), rgba(13, 148, 136, 0.25));
+            animation-delay: -7s;
         }
 
-        /* Card Container */
+        @keyframes floatGlow {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(35px, 25px) scale(1.08); }
+            100% { transform: translate(-25px, 35px) scale(0.95); }
+        }
+
+        /* Kartu Login Putih Elegan */
         .login-card {
             position: relative;
             z-index: 10;
@@ -96,13 +108,13 @@
             border-radius: 24px;
             padding: 2.5rem 2.25rem;
             box-shadow: 
-                0 20px 40px -15px rgba(15, 23, 42, 0.07),
-                0 0 1px 1px rgba(15, 23, 42, 0.02);
+                0 25px 55px -12px rgba(7, 18, 30, 0.48),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
             animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             overflow: hidden;
         }
 
-        /* Top Accent Highlight Bar */
+        /* Garis Aksen Gradasi Toska & Biru di Atas Kartu */
         .login-card::before {
             content: "";
             position: absolute;
@@ -110,7 +122,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: linear-gradient(90deg, #0d9488, #0284c7 50%, #4f46e5);
+            background: linear-gradient(90deg, #0d9488, #0284c7 50%, #3b82f6);
         }
 
         @keyframes cardEntrance {
@@ -124,7 +136,7 @@
             }
         }
 
-        /* Brand & Header */
+        /* Brand & Header Section */
         .brand-header {
             text-align: center;
             margin-bottom: 2rem;
@@ -144,7 +156,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 22px -4px rgba(2, 132, 199, 0.35);
+            box-shadow: 0 10px 22px -4px rgba(2, 132, 199, 0.4);
         }
 
         .brand-icon svg {
@@ -220,7 +232,7 @@
             margin-top: 2px;
         }
 
-        /* Form Controls */
+        /* Form Group */
         .form-group {
             margin-bottom: 1.35rem;
         }
@@ -250,7 +262,7 @@
             z-index: 2;
         }
 
-        /* White, Clear, Readable Input Box */
+        /* Text Box PUTIH Bersih & Jelas Terbaca */
         .form-input {
             width: 100%;
             height: 50px;
@@ -288,7 +300,7 @@
             color: var(--primary);
         }
 
-        /* Password Toggle */
+        /* Tombol Toggle Lihat Sandi */
         .btn-toggle-pw {
             position: absolute;
             right: 0.75rem;
@@ -315,7 +327,7 @@
             height: 19px;
         }
 
-        /* Remember Me */
+        /* Ingat Saya */
         .remember-row {
             display: flex;
             align-items: center;
@@ -346,7 +358,7 @@
             cursor: pointer;
         }
 
-        /* Submit Button */
+        /* Tombol Masuk Gradasi Toska & Biru */
         .btn-submit {
             width: 100%;
             height: 50px;
@@ -361,13 +373,13 @@
             align-items: center;
             justify-content: center;
             gap: 0.5rem;
-            box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.4);
+            box-shadow: 0 10px 22px -5px rgba(2, 132, 199, 0.45);
             transition: all 0.2s ease;
         }
 
         .btn-submit:hover {
             transform: translateY(-1px);
-            box-shadow: 0 14px 24px -5px rgba(2, 132, 199, 0.5);
+            box-shadow: 0 14px 26px -5px rgba(2, 132, 199, 0.55);
             background: linear-gradient(135deg, #0b7f74, #0369a1 60%, #1d4ed8);
         }
 
@@ -385,7 +397,7 @@
             transform: translateX(3px);
         }
 
-        /* Footer Link */
+        /* Link Pendaftaran */
         .footer-text {
             text-align: center;
             margin-top: 1.75rem;
@@ -405,7 +417,7 @@
             text-decoration: underline;
         }
 
-        /* Security Badge */
+        /* Lencana Keamanan */
         .security-badge {
             margin-top: 1.5rem;
             padding-top: 1.15rem;
@@ -433,8 +445,9 @@
     </style>
 </head>
 <body>
-    <div class="ambient-glow ambient-glow-1"></div>
-    <div class="ambient-glow ambient-glow-2"></div>
+    <!-- Ambient Glow Orbs: Pendaran Toska & Biru Tenang -->
+    <div class="ambient-glow ambient-glow-teal"></div>
+    <div class="ambient-glow ambient-glow-blue"></div>
 
     <div class="login-card">
         <!-- Brand Header Section -->
@@ -467,7 +480,7 @@
             </div>
         @endif
 
-        <!-- Error Alert (Flash) -->
+        <!-- Error Alert -->
         @if(session('error'))
             <div class="alert alert-error">
                 <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
@@ -572,7 +585,7 @@
         </div>
     </div>
 
-    <!-- Toggle Password Visibility -->
+    <!-- Toggle Password Visibility Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const toggleBtn = document.getElementById('togglePassword');
