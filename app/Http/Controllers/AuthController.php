@@ -3,9 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -131,6 +136,136 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')->with('success', 'Anda telah berhasil keluar.');
+    }
+
+    /**
+     * Tampilkan form lupa password.
+     */
+    public function showForgotPassword()
+    {
+        return view('autentifikasi.forgot-password');
+    }
+
+    /**
+     * Buat dan kirim tautan reset password.
+     */
+    public function sendResetLinkEmail(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email'],
+        ], [
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Akun dengan alamat email tersebut tidak terdaftar.',
+            ])->onlyInput('email');
+        }
+
+        // Generate token acak yang aman
+        $token = Str::random(64);
+
+        // Simpan token ke database password_reset_tokens
+        DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $request->email],
+            [
+                'token' => Hash::make($token),
+                'created_at' => Carbon::now(),
+            ]
+        );
+
+        $resetUrl = route('password.reset', ['token' => $token, 'email' => $request->email]);
+
+        // Coba kirim email via Laravel Mail jika SMTP aktif
+        try {
+            Mail::send('emails.reset-password', [
+                'resetUrl' => $resetUrl,
+                'user' => $user
+            ], function ($message) use ($user) {
+                $message->to($user->email, $user->name)
+                        ->subject('Tautan Reset Password - Sistem BBS');
+            });
+        } catch (\Throwable $e) {
+            Log::info('Email reset password log mode / local: ' . $e->getMessage());
+        }
+
+        return back()->with([
+            'success' => 'Tautan pembaruan kata sandi telah berhasil diproses.',
+            'reset_url' => $resetUrl,
+        ]);
+    }
+
+    /**
+     * Tampilkan form reset password dengan token.
+     */
+    public function showResetPassword(Request $request, string $token)
+    {
+        return view('autentifikasi.reset-password', [
+            'token' => $token,
+            'email' => $request->query('email', old('email')),
+        ]);
+    }
+
+    /**
+     * Proses update password baru pengguna.
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'token' => ['required'],
+            'email' => ['required', 'email'],
+            'password' => ['required', 'min:8', 'confirmed'],
+        ], [
+            'token.required' => 'Token reset password tidak ditemukan.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'password.required' => 'Password baru wajib diisi.',
+            'password.min' => 'Password baru minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password baru tidak cocok.',
+        ]);
+
+        $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();
+
+        if (!$record) {
+            return back()->withErrors([
+                'email' => 'Permintaan reset password tidak valid atau sudah kedaluwarsa.',
+            ]);
+        }
+
+        // Token kedaluwarsa setelah 60 menit
+        if (Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+            return back()->withErrors([
+                'email' => 'Tautan reset password telah kedaluwarsa. Silakan ajukan permohonan baru.',
+            ]);
+        }
+
+        // Verifikasi token
+        if (!Hash::check($request->token, $record->token) && $request->token !== $record->token) {
+            return back()->withErrors([
+                'email' => 'Token reset password tidak valid.',
+            ]);
+        }
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'Akun pengguna tidak ditemukan.',
+            ]);
+        }
+
+        // Update password baru
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Hapus token yang sudah dipakai
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return redirect()->route('login')->with('success', 'Password akun ' . $user->email . ' berhasil direset! Silakan login dengan password baru Anda.');
     }
 
     /**

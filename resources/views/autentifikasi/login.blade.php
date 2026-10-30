@@ -327,7 +327,7 @@
             height: 19px;
         }
 
-        /* Ingat Saya */
+        /* Ingat Saya & Lupa Password */
         .remember-row {
             display: flex;
             align-items: center;
@@ -335,6 +335,19 @@
             margin-top: 0.25rem;
             margin-bottom: 1.5rem;
             font-size: 0.85rem;
+        }
+
+        .forgot-pw-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.825rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+
+        .forgot-pw-link:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
         }
 
         .checkbox-label {
@@ -552,12 +565,13 @@
                 </div>
             </div>
 
-            <!-- Remember Me -->
+            <!-- Remember Me & Forgot Password -->
             <div class="remember-row">
                 <label class="checkbox-label">
                     <input type="checkbox" name="remember" id="remember">
                     <span>Ingat Saya</span>
                 </label>
+                <a href="{{ route('password.request') }}" class="forgot-pw-link">Lupa Password?</a>
             </div>
 
             <!-- Submit Button -->
