@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Sistem Observasi BBS</title>
+    <title>Pendaftaran Akun - Sistem Observasi BBS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --accent-teal: #0d9488;
+            --bg-page: #f8fafc;
+            --card-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --input-bg: #ffffff;
+            --input-border: #cbd5e1;
+            --input-focus-border: #0284c7;
+            --input-focus-ring: rgba(2, 132, 199, 0.16);
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         body {
@@ -20,69 +36,185 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background-color: #f8fafc;
-            background-image: 
-                radial-gradient(at 100% 0%, rgba(79, 70, 229, 0.07) 0px, transparent 50%),
-                radial-gradient(at 0% 100%, rgba(59, 130, 246, 0.07) 0px, transparent 50%);
-            color: #0f172a;
+            background-color: var(--bg-page);
+            color: var(--text-heading);
             padding: 2rem 1.5rem;
             position: relative;
+            background-image: 
+                radial-gradient(circle at 10% 10%, rgba(13, 148, 136, 0.08) 0px, transparent 40%),
+                radial-gradient(circle at 90% 90%, rgba(2, 132, 199, 0.08) 0px, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.04) 0px, transparent 60%);
+        }
+
+        /* Subtle Geometric Background Grid */
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: 
+                linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+            background-size: 36px 36px;
+            mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 40%, transparent 85%);
+            z-index: 0;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 500px;
+            height: 500px;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.65;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient-glow-1 {
+            top: -100px;
+            left: -100px;
+            background: rgba(13, 148, 136, 0.12);
+        }
+
+        .ambient-glow-2 {
+            bottom: -120px;
+            right: -120px;
+            background: rgba(2, 132, 199, 0.12);
         }
 
         .register-card {
             position: relative;
             z-index: 10;
             width: 100%;
-            max-width: 560px;
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
+            max-width: 620px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
             border-radius: 24px;
-            padding: 2.5rem;
-            box-shadow: 0 20px 40px -15px rgba(15, 23, 42, 0.07);
-            animation: fadeIn 0.5s ease;
+            padding: 2.5rem 2.25rem;
+            box-shadow: 
+                0 20px 40px -15px rgba(15, 23, 42, 0.07),
+                0 0 1px 1px rgba(15, 23, 42, 0.02);
+            animation: cardEntrance 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            overflow: hidden;
+            margin: auto;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(16px); }
-            to { opacity: 1; transform: translateY(0); }
+        .register-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0d9488, #0284c7 50%, #4f46e5);
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .brand-header {
             text-align: center;
-            margin-bottom: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .brand-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #0d9488, #0284c7 60%, #2563eb);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 22px -4px rgba(2, 132, 199, 0.35);
+        }
+
+        .brand-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #ffffff;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.75rem;
+            background: #e0f2fe;
+            border: 1px solid #bae6fd;
+            border-radius: 9999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #0369a1;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+
+        .brand-badge .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0284c7;
         }
 
         .brand-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #0f172a;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text-heading);
             margin-bottom: 0.35rem;
         }
 
         .brand-subtitle {
             font-size: 0.875rem;
-            color: #64748b;
+            color: var(--text-muted);
+            line-height: 1.5;
         }
 
         .alert {
             padding: 0.875rem 1rem;
             border-radius: 12px;
-            font-size: 0.875rem;
-            margin-bottom: 1.25rem;
+            font-size: 0.85rem;
+            margin-bottom: 1.35rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            line-height: 1.45;
+            font-weight: 500;
             background: #fef2f2;
             border: 1px solid #fecaca;
             color: #991b1b;
-            font-weight: 500;
         }
 
+        .alert svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        /* Form Grid */
         .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
+            gap: 1.1rem 1rem;
         }
 
         .form-group {
-            margin-bottom: 1.15rem;
+            margin-bottom: 0;
         }
 
         .form-group.full-width {
@@ -91,33 +223,52 @@
 
         .form-label {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.825rem;
             font-weight: 600;
-            color: #334155;
-            margin-bottom: 0.4rem;
+            color: var(--text-body);
+            margin-bottom: 0.45rem;
         }
 
+        /* White, Clear, Readable Input Box */
         .form-input {
             width: 100%;
-            padding: 0.75rem 1rem;
-            background: #ffffff;
-            border: 1px solid #cbd5e1;
+            height: 48px;
+            padding: 0 1rem;
+            background: var(--input-bg);
+            border: 1.5px solid var(--input-border);
             border-radius: 12px;
-            color: #0f172a;
-            font-size: 0.9rem;
+            color: var(--text-heading);
+            font-size: 0.92rem;
+            font-weight: 500;
             outline: none;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
             transition: all 0.2s ease;
         }
 
-        .form-input:focus {
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        .form-input::placeholder {
+            color: #94a3b8;
+            font-weight: 400;
         }
 
+        .form-input:hover {
+            border-color: #94a3b8;
+        }
+
+        .form-input:focus {
+            border-color: var(--input-focus-border);
+            box-shadow: 0 0 0 4px var(--input-focus-ring);
+        }
+
+        /* Role Selector Cards */
         .role-selector {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.75rem;
+            gap: 0.85rem;
+        }
+
+        .role-option {
+            cursor: pointer;
+            position: relative;
         }
 
         .role-option input {
@@ -129,142 +280,130 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 0.75rem;
+            justify-content: center;
+            padding: 0.85rem 1rem;
             background: #f8fafc;
-            border: 2px solid #e2e8f0;
+            border: 1.5px solid #e2e8f0;
             border-radius: 12px;
-            cursor: pointer;
             text-align: center;
             transition: all 0.2s ease;
+            min-height: 72px;
         }
 
         .role-card span {
             font-size: 0.875rem;
-            font-weight: 600;
-            color: #334155;
+            font-weight: 700;
+            color: var(--text-heading);
         }
 
         .role-card small {
             font-size: 0.725rem;
-            color: #64748b;
+            color: var(--text-muted);
+            margin-top: 0.2rem;
         }
 
         .role-option input:checked + .role-card {
-            border-color: #4f46e5;
+            border-color: var(--primary);
             background: #eff6ff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
         }
 
+        .role-option input:checked + .role-card span {
+            color: var(--primary);
+        }
+
+        /* Submit Button */
         .btn-submit {
             width: 100%;
-            padding: 0.875rem;
-            background: linear-gradient(135deg, #4f46e5, #2563eb);
+            height: 50px;
+            background: linear-gradient(135deg, #0d9488, #0284c7 60%, #2563eb);
             border: none;
             border-radius: 12px;
             color: #ffffff;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.98rem;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 0 8px 20px -4px rgba(79, 70, 229, 0.35);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 10px 20px -5px rgba(2, 132, 199, 0.4);
             transition: all 0.2s ease;
-            margin-top: 0.5rem;
+            margin-top: 1.5rem;
         }
 
         .btn-submit:hover {
-            background: linear-gradient(135deg, #4338ca, #1d4ed8);
             transform: translateY(-1px);
+            box-shadow: 0 14px 24px -5px rgba(2, 132, 199, 0.5);
+            background: linear-gradient(135deg, #0b7f74, #0369a1 60%, #1d4ed8);
         }
 
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Footer Link */
         .footer-text {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 1.75rem;
             font-size: 0.875rem;
-            color: #64748b;
+            color: var(--text-muted);
         }
 
         .footer-text a {
-            color: #4f46e5;
+            color: var(--primary);
             text-decoration: none;
             font-weight: 600;
+            transition: color 0.2s ease;
         }
 
-        /* Refined account-registration visual theme */
-        body {
-            align-items: flex-start;
-            background:
-                radial-gradient(ellipse at 10% 8%, rgba(45,212,191,.18), transparent 28rem),
-                radial-gradient(ellipse at 95% 90%, rgba(59,130,246,.24), transparent 32rem),
-                linear-gradient(135deg, #081323 0%, #10253c 52%, #102c3b 100%);
+        .footer-text a:hover {
+            color: var(--primary-hover);
+            text-decoration: underline;
         }
-        body::before {
-            content: "";
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            opacity: .15;
-            background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
-            background-size: 42px 42px;
-            mask-image: linear-gradient(to bottom, black, transparent 82%);
-        }
-        .register-card {
-            max-width: 620px;
-            margin: auto;
-            border: 1px solid rgba(255,255,255,.72);
-            border-radius: 28px;
-            padding: 2.5rem;
-            box-shadow: 0 32px 90px rgba(0,0,0,.3), 0 4px 18px rgba(15,23,42,.12);
-            position: relative;
-            overflow: hidden;
-        }
-        .register-card::before {
-            content: "";
-            position: absolute;
-            inset: 0 0 auto;
-            height: 5px;
-            background: linear-gradient(90deg, #2dd4bf, #38bdf8, #6366f1);
-        }
-        .brand-header { margin-bottom: 2rem; }
-        .brand-title { letter-spacing: -.04em; font-size: 1.65rem; }
-        .brand-subtitle { line-height: 1.6; }
-        .form-grid { gap: 1.05rem 1rem; }
-        .form-group { margin-bottom: .85rem; }
-        .form-label { color: #25364b; font-size: .82rem; }
-        .form-input {
-            min-height: 48px;
-            background: #f8fafc;
-            border-color: #dce5ee;
-            border-radius: 12px;
-        }
-        .form-input:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(14,165,233,.12); }
-        .role-card { border-radius: 14px; min-height: 76px; justify-content: center; }
-        .role-option input:checked + .role-card { border-color: #0ea5a4; background: #ecfeff; box-shadow: 0 0 0 3px rgba(20,184,166,.1); }
-        .btn-submit {
-            min-height: 52px;
-            border-radius: 14px;
-            background: linear-gradient(105deg, #0f766e, #0284c7 58%, #2563eb);
-            box-shadow: 0 10px 24px rgba(2,132,199,.25);
-        }
-        .btn-submit:hover { background: linear-gradient(105deg, #0d6b64, #0369a1 58%, #1d4ed8); box-shadow: 0 14px 28px rgba(2,132,199,.3); }
-        .footer-text { line-height: 1.6; }
-        .footer-text a { color: #087e8b; }
-        .footer-text a:hover { color: #075985; }
+
         @media (max-width: 600px) {
             body { padding: 1rem; }
-            .register-card { padding: 2rem 1.25rem; border-radius: 23px; }
-            .form-grid { grid-template-columns: 1fr; gap: 0; }
+            .register-card { padding: 2rem 1.25rem; border-radius: 20px; }
+            .form-grid { grid-template-columns: 1fr; gap: 0.85rem; }
             .form-group.full-width { grid-column: auto; }
-            .brand-title { font-size: 1.45rem; }
+            .brand-title { font-size: 1.4rem; }
+            .form-input { font-size: 16px; }
         }
     </style>
 </head>
 <body>
+    <div class="ambient-glow ambient-glow-1"></div>
+    <div class="ambient-glow ambient-glow-2"></div>
+
     <div class="register-card">
+        <!-- Brand Header Section -->
         <div class="brand-header">
+            <div class="brand-icon-wrapper">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="8.5" cy="7" r="4"/>
+                        <line x1="20" y1="8" x2="20" y2="14"/>
+                        <line x1="23" y1="11" x2="17" y2="11"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="brand-badge">
+                <span class="dot"></span>
+                <span>Behavior-Based Safety</span>
+            </div>
+
             <h1 class="brand-title">Pendaftaran Akun BBS</h1>
-            <p class="brand-subtitle">Sistem Observasi Keselamatan Kerja (BBS & C4.5)</p>
+            <p class="brand-subtitle">Daftarkan akun karyawan atau permohonan Admin HES</p>
         </div>
 
         @if($errors->any())
             <div class="alert">
+                <svg width="18" height="18" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
                 <span>{{ $errors->first() }}</span>
             </div>
         @endif
@@ -308,14 +447,14 @@
                     <div class="role-selector">
                         <label class="role-option">
                             <input type="radio" name="role" value="karyawan" {{ old('role', 'karyawan') === 'karyawan' ? 'checked' : '' }} required>
-                            <span class="role-card"><span>Karyawan</span><small>Permohonan akun karyawan</small></span>
+                            <span class="role-card"><span>Karyawan</span><small>Akun pelapor observasi BBS</small></span>
                         </label>
                         <label class="role-option">
                             <input type="radio" name="role" value="admin" {{ old('role') === 'admin' ? 'checked' : '' }} required>
-                            <span class="role-card"><span>Calon Admin HES</span><small>Aktif setelah disetujui Admin HES</small></span>
+                            <span class="role-card"><span>Calon Admin HES</span><small>Aktif setelah disetujui Admin</small></span>
                         </label>
                     </div>
-                    <small style="display:block;color:#64748b;margin-top:.5rem;line-height:1.5">Semua pendaftaran ditinjau Admin HES. Akun belum bisa digunakan sebelum disetujui.</small>
+                    <small style="display:block;color:#64748b;margin-top:.45rem;line-height:1.5;font-size:0.75rem;">Semua pendaftaran akun akan ditinjau Admin HES sebelum dapat digunakan.</small>
                 </div>
 
                 <div class="form-group">
@@ -329,11 +468,17 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">Kirim Pendaftaran Akun</button>
+            <button type="submit" class="btn-submit">
+                <span>Kirim Pendaftaran Akun</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <polyline points="12 5 19 12 12 19"/>
+                </svg>
+            </button>
         </form>
 
         <p class="footer-text">
-            Sudah memiliki akun? <a href="{{ route('login') }}">Masuk di sini</a>
+            Sudah memiliki akun? <a href="{{ route('login') }}">Masuk di sini &rarr;</a>
         </p>
     </div>
 </body>
