@@ -7,6 +7,34 @@ use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
 
+// =====================================================================
+// ROUTE SEMENTARA - Hapus user Rachel (hapus setelah digunakan!)
+// Akses: /dev-tool-hapus-rachel-x7k9q2
+// =====================================================================
+Route::get('/dev-tool-hapus-rachel-x7k9q2', function () {
+    $kunci = request('kunci');
+    if ($kunci !== 'BBS2025-HAPUS') {
+        return response('Akses ditolak.', 403);
+    }
+
+    $users = \App\Models\User::whereRaw("name ILIKE '%rachel%' OR name ILIKE '%cristal%' OR name ILIKE '%muttaqin%'")->get(['id','name','email','role']);
+
+    if ($users->isEmpty()) {
+        return response()->json(['pesan' => 'User tidak ditemukan di database.']);
+    }
+
+    $dihapus = [];
+    foreach ($users as $u) {
+        $dihapus[] = ['id' => $u->id, 'nama' => $u->name, 'email' => $u->email, 'role' => $u->role];
+        $u->delete();
+    }
+
+    return response()->json([
+        'status' => 'BERHASIL DIHAPUS',
+        'user_dihapus' => $dihapus,
+    ]);
+});
+
 // Redirect root URL ke dashboard jika sudah login, atau ke login jika belum
 Route::get('/', function () {
     if (Auth::check()) {
