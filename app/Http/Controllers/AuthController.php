@@ -83,28 +83,26 @@ class AuthController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'role' => ['required', 'in:karyawan,admin'],
             'no_hp' => ['required', 'string', 'max:20'],
             'jabatan' => ['required', 'string', 'max:255'],
             'unit_departemen' => ['required', 'string', 'max:255'],
             'no_batch' => ['nullable', 'string', 'max:50'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
-            'role' => ['required', 'in:admin,karyawan'],
         ], [
             'name.required' => 'Nama lengkap wajib diisi.',
             'email.required' => 'Email wajib diisi.',
             'email.email' => 'Format email tidak valid.',
             'email.unique' => 'Email sudah terdaftar.',
+            'role.in' => 'Jenis akun yang dipilih tidak valid.',
             'no_hp.required' => 'Nomor HP wajib diisi.',
             'jabatan.required' => 'Jabatan wajib diisi.',
             'unit_departemen.required' => 'Unit / Departemen wajib diisi.',
-            'no_batch.max' => 'Nomor batch maksimal 50 karakter.',
+            'no_batch.max' => 'Nomor badge maksimal 50 karakter.',
             'password.required' => 'Password wajib diisi.',
             'password.min' => 'Password minimal 8 karakter.',
             'password.confirmed' => 'Konfirmasi password tidak cocok.',
-            'role.required' => 'Silakan pilih role.',
         ]);
-
-        $status = ($request->role === 'admin') ? 'active' : 'pending';
 
         $user = User::create([
             'name' => $request->name,
@@ -114,18 +112,12 @@ class AuthController extends Controller
             'unit_departemen' => $request->unit_departemen,
             'no_batch' => $request->no_batch,
             'password' => Hash::make($request->password),
+            // Semua pendaftar, termasuk calon Admin HES, wajib menunggu persetujuan admin aktif.
             'role' => $request->role,
-            'status' => $status,
+            'status' => 'pending',
         ]);
 
-        if ($status === 'pending') {
-            return redirect()->route('login')->with('success', 'Pendaftaran berhasil! Akun Anda sedang menunggu verifikasi oleh Admin HES sebelum dapat digunakan untuk login.');
-        }
-
-        Auth::login($user);
-        $request->session()->regenerate();
-
-        return $this->redirectBasedOnRole($user, 'Registrasi Admin berhasil! Selamat datang, ' . $user->name . '.');
+        return redirect()->route('login')->with('success', 'Permohonan akun berhasil dikirim. Akun Anda menunggu verifikasi Admin HES dan belum dapat digunakan untuk login.');
     }
 
     /**

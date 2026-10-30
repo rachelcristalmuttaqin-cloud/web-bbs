@@ -16,6 +16,7 @@
                         <th>Tanggal</th>
                         <th>Lokasi Area</th>
                         <th>Kategori BBS</th>
+                        <th>Keterangan Lain-lain</th>
                         <th>Perilaku</th>
                         <th>Risiko (C4.5)</th>
                         <th>Status Tindak Lanjut</th>
@@ -28,6 +29,7 @@
                             <td>{{ date('d M Y', strtotime($obs->tanggal)) }}</td>
                             <td>{{ $obs->lokasi->nama_lokasi ?? '-' }}</td>
                             <td>{{ Str::limit($obs->kategori->nama_kategori ?? '-', 22) }}</td>
+                            <td>{{ $obs->observasi_lainnya ?: '-' }}</td>
                             <td><span class="badge badge-{{ $obs->jenis_perilaku }}">{{ strtoupper($obs->jenis_perilaku) }}</span></td>
                             <td><span class="badge badge-{{ $obs->tingkat_risiko }}">{{ strtoupper($obs->tingkat_risiko) }}</span></td>
                             <td style="font-size: 0.8rem; color: #64748b; font-weight: 600;">{{ strtoupper($obs->status_tindak_lanjut) }}</td>
@@ -35,7 +37,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="text-align: center; color: #94a3b8; padding: 2rem;">Belum ada data observasi.</td>
+                            <td colspan="8" style="text-align: center; color: #94a3b8; padding: 2rem;">Belum ada data observasi.</td>
                         </tr>
                     @endforelse
                 </tbody>

@@ -195,6 +195,93 @@
             .overlay.show { display: block; }
             .content-body { padding: 1rem; }
         }
+
+        /* Visual refresh: crew portal */
+        :root {
+            --primary: #0284c7;
+            --primary-dark: #0369a1;
+            --primary-light: #e0f2fe;
+            --bg: #f3f8fb;
+            --border: #e3ebf2;
+            --sidebar-bg: #102032;
+        }
+        body {
+            background:
+                radial-gradient(ellipse at 90% 0%, rgba(14,165,233,.08), transparent 28rem),
+                radial-gradient(ellipse at 3% 90%, rgba(20,184,166,.055), transparent 30rem),
+                var(--bg);
+        }
+        .sidebar {
+            background: linear-gradient(165deg, #102032 0%, #12334a 58%, #10434d 100%);
+            box-shadow: 14px 0 40px rgba(15,23,42,.12);
+        }
+        .sidebar-brand { padding: 1.55rem 1.25rem 1.4rem; }
+        .sidebar-brand-icon {
+            background: linear-gradient(145deg, #2dd4bf, #0284c7 65%, #2563eb);
+            border: 1px solid rgba(255,255,255,.2);
+            border-radius: 14px;
+            box-shadow: 0 8px 22px rgba(2,132,199,.3);
+        }
+        .sidebar-item { border: 1px solid transparent; border-radius: 12px; padding: .72rem .875rem; }
+        .sidebar-item.active {
+            color: #ecfeff;
+            background: linear-gradient(100deg, rgba(2,132,199,.34), rgba(20,184,166,.14));
+            border-color: rgba(103,232,249,.16);
+            box-shadow: inset 3px 0 #2dd4bf;
+        }
+        .sidebar-item.active .nav-icon { color: #67e8f9; }
+        .sidebar-footer { border-color: rgba(255,255,255,.1); }
+        .sidebar-user { background: rgba(255,255,255,.065); border: 1px solid rgba(255,255,255,.07); }
+        .sidebar-avatar { background: linear-gradient(145deg, #2dd4bf, #0284c7); }
+        .topbar {
+            height: 72px;
+            background: rgba(255,255,255,.88);
+            backdrop-filter: blur(16px);
+            border-bottom-color: rgba(226,232,240,.85);
+            box-shadow: 0 5px 24px rgba(15,23,42,.045);
+        }
+        .topbar-title { letter-spacing: -.025em; }
+        .topbar-badge { background: #ecfeff; color: #0e7490; border: 1px solid #cffafe; }
+        .main-content { padding-top: 72px; }
+        .content-body { max-width: 1500px; margin: 0 auto; padding: 2rem 2.25rem; }
+        .card {
+            border-color: rgba(226,232,240,.9);
+            border-radius: 20px;
+            box-shadow: 0 8px 28px rgba(15,23,42,.045), 0 1px 2px rgba(15,23,42,.025);
+        }
+        .card-header { gap: 1rem; }
+        .card-title { letter-spacing: -.02em; }
+        .stats-grid { gap: 1.1rem; }
+        .stat-card {
+            border-radius: 18px;
+            box-shadow: 0 5px 18px rgba(15,23,42,.035);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 26px rgba(15,23,42,.075); }
+        .table-wrap { border: 1px solid #edf1f6; border-radius: 14px; }
+        table { font-size: .84rem; }
+        th { background: #f4f9fc; color: #52627a; padding-top: .9rem; padding-bottom: .9rem; }
+        td { color: #334155; }
+        tr:hover td { background: #f4fbff; }
+        .btn { border-radius: 11px; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+        .btn-primary { background: linear-gradient(135deg, #0284c7, #0369a1); box-shadow: 0 5px 14px rgba(2,132,199,.2); }
+        .btn-primary:hover { box-shadow: 0 8px 18px rgba(2,132,199,.27); }
+        .form-control { border-color: #d9e1ec; border-radius: 11px; background: #fff; }
+        .form-control:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(14,165,233,.12); }
+        .alert { border-radius: 14px; box-shadow: 0 4px 14px rgba(15,23,42,.035); }
+        @media (max-width: 900px) { .content-body { padding: 1.25rem; } }
+        @media (max-width: 640px) {
+            .topbar { height: 64px; padding: 0 .9rem; }
+            .main-content { padding-top: 64px; }
+            .topbar-title { font-size: .9rem; }
+            .topbar-badge { font-size: .68rem; padding: .25rem .5rem; }
+            .content-body { padding: .85rem; }
+            .card { border-radius: 16px; padding: 1rem; }
+            .card-header { align-items: flex-start; flex-wrap: wrap; }
+            .stats-grid { grid-template-columns: 1fr 1fr; gap: .65rem; }
+            .stat-card { padding: .85rem; }
+            .stat-icon { width: 38px; height: 38px; min-width: 38px; }
+        }
     </style>
     @yield('styles')
 </head>

@@ -46,9 +46,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/observasi', [AdminBbsController::class, 'kelolaObservasi'])->name('observasi.index');
         Route::get('/observasi/{id}', [AdminBbsController::class, 'detailObservasi'])->name('observasi.detail');
         Route::post('/observasi/{id}/tindak-lanjut', [AdminBbsController::class, 'updateTindakLanjut'])->name('observasi.tindak_lanjut');
+        Route::post('/observasi/{id}/validasi-risiko', [AdminBbsController::class, 'validasiRisikoHes'])->name('observasi.validasi_risiko');
 
         // Modul Algoritma C4.5
         Route::get('/c45', [AdminBbsController::class, 'modulC45'])->name('c45.index');
+        Route::post('/c45/keputusan', [AdminBbsController::class, 'storeKeputusanHes'])->name('c45.keputusan');
 
         // Master Data (Kategori & Lokasi)
         Route::get('/master', [AdminBbsController::class, 'masterData'])->name('master.index');
@@ -59,6 +61,7 @@ Route::middleware('auth')->group(function () {
 
         // Laporan
         Route::get('/laporan', [AdminBbsController::class, 'laporan'])->name('laporan.index');
+        Route::get('/laporan/export-excel', [AdminBbsController::class, 'exportLaporanExcel'])->name('laporan.export_excel');
     });
 
     // Route Khusus Karyawan

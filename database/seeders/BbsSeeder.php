@@ -14,20 +14,7 @@ class BbsSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Akun Default Admin & Karyawan
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name' => 'Administrator HES',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'no_hp' => '081234567890',
-                'jabatan' => 'HES Specialist',
-                'unit_departemen' => 'Divisi HES & Safety',
-                'status' => 'active',
-            ]
-        );
-
+        // 1. Akun demo karyawan. Akun Admin tidak dibuat oleh seeder umum.
         $karyawanActive = User::firstOrCreate(
             ['email' => 'karyawan@example.com'],
             [

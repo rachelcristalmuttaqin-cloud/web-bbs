@@ -246,6 +246,9 @@
 @section('content')
 <form action="{{ route('karyawan.observasi.store') }}" method="POST" id="bbsForm">
     @csrf
+    @error('item_states')
+        <div role="alert" style="max-width:1100px;margin:0 auto 1rem;padding:.75rem 1rem;border:1px solid #fecaca;border-radius:8px;background:#fef2f2;color:#991b1b;font-weight:600;">{{ $message }}</div>
+    @enderror
 
     <!-- Form Container Yang Sama Persis Dengan Dokumen Fisik Gambar 1 -->
     <div class="bbs-paper-form">
@@ -292,12 +295,7 @@
                 <strong style="white-space: nowrap;">Lokasi:</strong>
                 <input type="text" name="area_observasi" id="lokasiInput" class="bbs-input-inline" placeholder="Contoh: Wellpad / Area Process..." value="{{ old('area_observasi', 'Wellpad') }}" oninput="syncLokasiText(this.value)" required>
             </div>
-            <div style="justify-content: flex-end;">
-                <label style="cursor: pointer; font-weight: bold; color: #16a34a; display: flex; align-items: center; gap: 4px;">
-                    <input type="radio" name="jenis_perilaku" value="safe" {{ old('jenis_perilaku', 'safe') === 'safe' ? 'checked' : '' }} class="jenisPerilakuRadio">
-                    Safe : ✓
-                </label>
-            </div>
+            <div style="justify-content: flex-end; font-weight:bold;">Hasil sistem: <span id="behaviorClassification" style="color:#64748b;">Menunggu checklist</span></div>
 
             <div>
                 <strong style="white-space: nowrap;">Nama:</strong>
@@ -307,12 +305,7 @@
                 <strong style="white-space: nowrap;">Unit:</strong>
                 <input type="text" class="bbs-input-inline" value="{{ Auth::user()->unit_departemen ?? 'Operasional' }}" readonly style="background: #e2e8f0;">
             </div>
-            <div style="justify-content: flex-end;">
-                <label style="cursor: pointer; font-weight: bold; color: #dc2626; display: flex; align-items: center; gap: 4px;">
-                    <input type="radio" name="jenis_perilaku" value="at_risk" {{ old('jenis_perilaku') === 'at_risk' ? 'checked' : '' }} class="jenisPerilakuRadio">
-                    At Risk : ✗
-                </label>
-            </div>
+            <div style="justify-content: flex-end; font-size:9px; color:#475569;">Klasifikasi mengikuti status checklist yang jumlahnya lebih banyak.</div>
 
             <div style="grid-column: span 3;">
                 <strong style="white-space: nowrap;">Posisi / jabatan:</strong>
@@ -494,6 +487,13 @@
                             <td>6.1</td><td style="cursor:pointer;" onclick="toggleItem('6.1', 'safe', {{ $catErgo }})">Melakukan Istirahat Berkala</td>{!! $renderCell('6.1', 'Melakukan Istirahat Berkala', $catErgo) !!}
                             <td>10.1</td><td style="cursor:pointer;" onclick="toggleItem('10.1', 'safe', {{ $catLain }})">Lain-lain</td>{!! $renderCell('10.1', 'Observasi Lain-lain', $catLain) !!}
                         </tr>
+                        <tr id="observasiLainnyaRow" style="display:none;">
+                            <td colspan="3"></td>
+                            <td colspan="3">
+                                <label for="observasiLainnyaInput"><strong>Keterangan Lain-lain:</strong></label>
+                                <textarea id="observasiLainnyaInput" name="observasi_lainnya" class="bbs-textarea-input" rows="2" placeholder="Jelaskan observasi perilaku lainnya...">{{ old('observasi_lainnya') }}</textarea>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -502,16 +502,7 @@
             <div class="bbs-right-panel">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #000; padding-bottom: 6px;">
                     <div><strong>Observasi Perilaku:</strong></div>
-                    <div class="bbs-radio-inline">
-                        <label>
-                            <input type="radio" name="jenis_perilaku_panel" value="safe" {{ old('jenis_perilaku', 'safe') === 'safe' ? 'checked' : '' }} onchange="syncJenisPerilaku('safe')">
-                            <strong>Safe (✓)</strong>
-                        </label>
-                        <label>
-                            <input type="radio" name="jenis_perilaku_panel" value="at_risk" {{ old('jenis_perilaku') === 'at_risk' ? 'checked' : '' }} onchange="syncJenisPerilaku('at_risk')">
-                            <strong>At-Risk (✗)</strong>
-                        </label>
-                    </div>
+                    <strong id="behaviorClassificationPanel" style="color:#64748b;">Menunggu checklist</strong>
                 </div>
 
                 <div class="bbs-field-box">
@@ -626,11 +617,17 @@
                     row.classList.add('row-risk');
                     row.classList.remove('row-safe');
                 }
-                syncJenisPerilaku('at_risk');
             }
         }
 
         updateSummary();
+        updateObservasiLainnyaVisibility();
+    }
+
+    function updateObservasiLainnyaVisibility() {
+        const state = document.querySelector('.bbs-item-state[data-code="10.1"]');
+        const row = document.getElementById('observasiLainnyaRow');
+        if (row) row.style.display = state && state.value ? '' : 'none';
     }
 
     function updateSummary() {
@@ -653,6 +650,13 @@
         const katInput = document.getElementById('selectedKategoriId');
 
         const totalCount = safeCodes.length + riskCodes.length;
+        const behavior = totalCount === 0 ? null : (riskCodes.length >= safeCodes.length ? 'at_risk' : 'safe');
+        const behaviorLabel = behavior === 'at_risk' ? 'AT-RISK' : (behavior === 'safe' ? 'SAFE' : 'Menunggu checklist');
+        const behaviorColor = behavior === 'at_risk' ? '#dc2626' : (behavior === 'safe' ? '#16a34a' : '#64748b');
+        ['behaviorClassification', 'behaviorClassificationPanel'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) { el.textContent = behaviorLabel; el.style.color = behaviorColor; }
+        });
         if (totalCount > 0) {
             let summaryText = '';
             if (riskCodes.length > 0) {
@@ -710,15 +714,6 @@
         updateSummary();
     }
 
-    function syncJenisPerilaku(val) {
-        document.querySelectorAll('.jenisPerilakuRadio').forEach(r => {
-            r.checked = (r.value === val);
-        });
-        document.querySelectorAll('input[name="jenis_perilaku_panel"]').forEach(r => {
-            r.checked = (r.value === val);
-        });
-    }
-
     // Two-way sync for Lokasi and Area Observasi fields
     function syncLokasiText(val) {
         const inp1 = document.getElementById('lokasiInput');
@@ -730,6 +725,7 @@
     // Run initial update on page load
     document.addEventListener('DOMContentLoaded', function() {
         updateSummary();
+        updateObservasiLainnyaVisibility();
     });
 </script>
 @endsection

@@ -186,6 +186,74 @@
             text-decoration: none;
             font-weight: 600;
         }
+
+        /* Refined account-registration visual theme */
+        body {
+            align-items: flex-start;
+            background:
+                radial-gradient(ellipse at 10% 8%, rgba(45,212,191,.18), transparent 28rem),
+                radial-gradient(ellipse at 95% 90%, rgba(59,130,246,.24), transparent 32rem),
+                linear-gradient(135deg, #081323 0%, #10253c 52%, #102c3b 100%);
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            opacity: .15;
+            background-image: linear-gradient(rgba(255,255,255,.12) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.12) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, black, transparent 82%);
+        }
+        .register-card {
+            max-width: 620px;
+            margin: auto;
+            border: 1px solid rgba(255,255,255,.72);
+            border-radius: 28px;
+            padding: 2.5rem;
+            box-shadow: 0 32px 90px rgba(0,0,0,.3), 0 4px 18px rgba(15,23,42,.12);
+            position: relative;
+            overflow: hidden;
+        }
+        .register-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto;
+            height: 5px;
+            background: linear-gradient(90deg, #2dd4bf, #38bdf8, #6366f1);
+        }
+        .brand-header { margin-bottom: 2rem; }
+        .brand-title { letter-spacing: -.04em; font-size: 1.65rem; }
+        .brand-subtitle { line-height: 1.6; }
+        .form-grid { gap: 1.05rem 1rem; }
+        .form-group { margin-bottom: .85rem; }
+        .form-label { color: #25364b; font-size: .82rem; }
+        .form-input {
+            min-height: 48px;
+            background: #f8fafc;
+            border-color: #dce5ee;
+            border-radius: 12px;
+        }
+        .form-input:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(14,165,233,.12); }
+        .role-card { border-radius: 14px; min-height: 76px; justify-content: center; }
+        .role-option input:checked + .role-card { border-color: #0ea5a4; background: #ecfeff; box-shadow: 0 0 0 3px rgba(20,184,166,.1); }
+        .btn-submit {
+            min-height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(105deg, #0f766e, #0284c7 58%, #2563eb);
+            box-shadow: 0 10px 24px rgba(2,132,199,.25);
+        }
+        .btn-submit:hover { background: linear-gradient(105deg, #0d6b64, #0369a1 58%, #1d4ed8); box-shadow: 0 14px 28px rgba(2,132,199,.3); }
+        .footer-text { line-height: 1.6; }
+        .footer-text a { color: #087e8b; }
+        .footer-text a:hover { color: #075985; }
+        @media (max-width: 600px) {
+            body { padding: 1rem; }
+            .register-card { padding: 2rem 1.25rem; border-radius: 23px; }
+            .form-grid { grid-template-columns: 1fr; gap: 0; }
+            .form-group.full-width { grid-column: auto; }
+            .brand-title { font-size: 1.45rem; }
+        }
     </style>
 </head>
 <body>
@@ -231,29 +299,23 @@
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="no_batch" class="form-label">No. Batch <span style="font-weight:400; color:#94a3b8;">(Opsional)</span></label>
-                    <input type="text" id="no_batch" name="no_batch" class="form-input" placeholder="Contoh: BATCH-2026-01 atau Angkatan 3" value="{{ old('no_batch') }}">
+                    <label for="no_batch" class="form-label">No. Badge <span style="font-weight:400; color:#94a3b8;">(Opsional)</span></label>
+                    <input type="text" id="no_batch" name="no_batch" class="form-input" placeholder="Masukkan nomor badge" value="{{ old('no_batch') }}">
                 </div>
 
                 <div class="form-group full-width">
-                    <label class="form-label">Role Pengguna</label>
+                    <label class="form-label">Jenis Akun</label>
                     <div class="role-selector">
                         <label class="role-option">
                             <input type="radio" name="role" value="karyawan" {{ old('role', 'karyawan') === 'karyawan' ? 'checked' : '' }} required>
-                            <div class="role-card">
-                                <span>Karyawan</span>
-                                <small>Observator (Perlu Verifikasi)</small>
-                            </div>
+                            <span class="role-card"><span>Karyawan</span><small>Permohonan akun karyawan</small></span>
                         </label>
-
                         <label class="role-option">
                             <input type="radio" name="role" value="admin" {{ old('role') === 'admin' ? 'checked' : '' }} required>
-                            <div class="role-card">
-                                <span>Admin / HES</span>
-                                <small>Pengelola & Analyst</small>
-                            </div>
+                            <span class="role-card"><span>Calon Admin HES</span><small>Aktif setelah disetujui Admin HES</small></span>
                         </label>
                     </div>
+                    <small style="display:block;color:#64748b;margin-top:.5rem;line-height:1.5">Semua pendaftaran ditinjau Admin HES. Akun belum bisa digunakan sebelum disetujui.</small>
                 </div>
 
                 <div class="form-group">

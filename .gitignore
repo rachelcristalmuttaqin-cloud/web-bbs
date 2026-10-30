@@ -18,6 +18,8 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/app/private/akun_kru_cep_smi.csv
+/storage/app/private/Data_BBS_RapidMiner.csv
 /vendor
 Homestead.json
 Homestead.yaml

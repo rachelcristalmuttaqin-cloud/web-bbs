@@ -38,8 +38,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">No. Batch <span style="font-weight:400; color:#94a3b8;">(Opsional)</span></label>
-                    <input type="text" name="no_batch" class="form-control" placeholder="Contoh: BATCH-2026-01 atau Angkatan 3" value="{{ old('no_batch', $user->no_batch) }}">
+                    <label class="form-label">No. Badge <span style="font-weight:400; color:#94a3b8;">(Opsional)</span></label>
+                    <input type="text" name="no_batch" class="form-control" placeholder="Masukkan nomor badge" value="{{ old('no_batch', $user->no_batch) }}">
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 1.5rem 0;">

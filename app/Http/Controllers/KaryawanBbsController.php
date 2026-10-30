@@ -59,8 +59,10 @@ class KaryawanBbsController extends Controller
             'tanggal' => ['required', 'date'],
             'lokasi_id' => ['nullable'],
             'area_observasi' => ['nullable', 'string', 'max:255'],
-            'jenis_perilaku' => ['required', 'in:safe,at_risk'],
+            'jenis_perilaku' => ['nullable', 'in:safe,at_risk'],
+            'item_states' => ['required', 'array'],
             'kategori_id' => ['nullable'],
+            'observasi_lainnya' => ['nullable', 'string', 'max:5000'],
             'ketika' => ['nullable', 'string'],
             'ditemukan' => ['required', 'string'],
             'sebab' => ['nullable', 'string'],
@@ -87,10 +89,25 @@ class KaryawanBbsController extends Controller
         }
 
         $kategoriId = $request->kategori_id ?: (KategoriPerilaku::first()?->id ?? 1);
+        $itemStates = collect($request->input('item_states', []))
+            ->filter(fn ($state) => in_array($state, ['safe', 'at_risk'], true))
+            ->all();
+
+        if ($itemStates === []) {
+            return back()->withInput()->withErrors([
+                'item_states' => 'Pilih minimal satu status pada checklist BBS.',
+            ]);
+        }
+
+        // Klasifikasi keseluruhan mengikuti status yang jumlahnya lebih banyak.
+        // Jika seimbang, gunakan At-Risk sebagai pilihan konservatif.
+        $safeCount = count(array_filter($itemStates, fn ($state) => $state === 'safe'));
+        $atRiskCount = count(array_filter($itemStates, fn ($state) => $state === 'at_risk'));
+        $recommendedBehavior = $safeCount > $atRiskCount ? 'safe' : 'at_risk';
 
         // Prediksi Otomatis Tingkat Risiko Menggunakan Algoritma C4.5
         $predictedRisk = $this->c45Service->predictRisk(
-            $request->jenis_perilaku,
+            $recommendedBehavior,
             $kategoriId,
             $lokasiId
         );
@@ -100,19 +117,25 @@ class KaryawanBbsController extends Controller
             'user_id' => $user->id,
             'lokasi_id' => $lokasiId,
             'unit_departemen' => $user->unit_departemen ?? 'Operasional Lapangan',
-            'jenis_perilaku' => $request->jenis_perilaku,
+            'jenis_perilaku' => $recommendedBehavior,
+            'rekomendasi_perilaku' => $recommendedBehavior,
             'kategori_id' => $kategoriId,
-            'item_states' => $request->input('item_states', []),
+            'item_states' => $itemStates,
+            'observasi_lainnya' => is_array($itemStates)
+                && in_array($itemStates['10.1'] ?? null, ['safe', 'at_risk'], true)
+                ? $request->input('observasi_lainnya')
+                : null,
             'ketika' => $request->ketika,
             'ditemukan' => $request->ditemukan,
             'sebab' => $request->sebab,
             'saran' => $request->saran,
             'tingkat_risiko' => $predictedRisk,
+            'rekomendasi_risiko' => $predictedRisk,
             'status_tindak_lanjut' => 'open',
         ]);
 
         return redirect()->route('karyawan.observasi.detail', $observasi->id)
-            ->with('success', 'Observasi BBS berhasil dikirim! Sistem C4.5 secara otomatis mengklasifikasikan tingkat risiko temuan sebagai: ' . strtoupper($predictedRisk));
+            ->with('success', 'Observasi BBS berhasil dikirim. Sistem membaca perilaku sebagai '.strtoupper($recommendedBehavior).' dan memberi rekomendasi tingkat risiko '.strtoupper($predictedRisk).' berdasarkan pola C4.5 atau aturan dasar jika data latih belum cukup. Admin HES akan meninjau hasil ini.');
     }
 
     /**

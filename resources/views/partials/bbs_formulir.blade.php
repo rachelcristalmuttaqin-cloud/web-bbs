@@ -466,15 +466,23 @@
                         <td>10.1</td><td>Lain-lain</td>
                         <td class="{{ $s101['class'] }}" style="text-align:center;">{{ $s101['symbol'] }}</td>
                     </tr>
+                    @if($observasi->observasi_lainnya)
+                    <tr>
+                        <td colspan="3"></td>
+                        <td colspan="3"><strong>Keterangan Lain-lain:</strong> {{ $observasi->observasi_lainnya }}</td>
+                    </tr>
+                    @endif
                     @php $s62 = $statusCell('6.2'); @endphp
                     <tr class="{{ $rowClass('6.2') }}">
                         <td>6.2</td><td>Posisi Leher dan Punggung Tegak</td>
                         <td class="{{ $s62['class'] }}" style="text-align:center;">{{ $s62['symbol'] }}</td>
                         <td colspan="3" style="background:#f1f5f9; text-align:center; font-size:9px; font-weight:bold;">
-                            Klasifikasi Risiko C4.5:
-                            <span style="color: {{ $observasi->tingkat_risiko === 'tinggi' ? '#dc2626' : ($observasi->tingkat_risiko === 'sedang' ? '#d97706' : '#16a34a') }};">
-                                {{ strtoupper($observasi->tingkat_risiko) }}
+                            Rekomendasi Risiko C4.5:
+                            <span style="color: {{ ($observasi->rekomendasi_risiko ?? $observasi->tingkat_risiko) === 'tinggi' ? '#dc2626' : (($observasi->rekomendasi_risiko ?? $observasi->tingkat_risiko) === 'sedang' ? '#d97706' : '#16a34a') }};">
+                                {{ strtoupper($observasi->rekomendasi_risiko ?? $observasi->tingkat_risiko) }}
                             </span>
+                            <br>Rekomendasi Perilaku: {{ strtoupper($observasi->rekomendasi_perilaku ?? $observasi->jenis_perilaku) }}
+                            @if($observasi->risiko_hes)<br>Keputusan Final HES: {{ strtoupper($observasi->jenis_perilaku) }} / {{ strtoupper($observasi->risiko_hes) }}@endif
                         </td>
                     </tr>
                 </tbody>

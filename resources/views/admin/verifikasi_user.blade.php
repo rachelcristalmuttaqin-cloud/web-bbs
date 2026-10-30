@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Verifikasi Karyawan')
-@section('page-title', 'Verifikasi Registrasi Karyawan')
+@section('title', 'Verifikasi Akun')
+@section('page-title', 'Verifikasi Pendaftaran Akun')
 
 @section('content')
     <div class="card">
         <div class="card-header">
-            <span class="card-title">👥 Daftar Pendaftaran Karyawan Menunggu Verifikasi</span>
+            <span class="card-title">👥 Pendaftaran Akun Menunggu Verifikasi</span>
             <span class="badge badge-pending">{{ $pendingUsers->count() }} Pending</span>
         </div>
 
@@ -15,11 +15,12 @@
                 <thead>
                     <tr>
                         <th>Nama</th>
+                        <th>Jenis Akun</th>
                         <th>Email</th>
                         <th>No. HP</th>
                         <th>Jabatan</th>
                         <th>Unit / Dept</th>
-                        <th>No. Batch</th>
+                        <th>No. Badge</th>
                         <th>Terdaftar</th>
                         <th>Aksi</th>
                     </tr>
@@ -28,13 +29,14 @@
                     @forelse($pendingUsers as $user)
                         <tr>
                             <td><strong>{{ $user->name }}</strong></td>
+                            <td><span class="badge {{ $user->role === 'admin' ? 'badge-identifier' : '' }}">{{ $user->role === 'admin' ? 'Calon Admin HES' : 'Karyawan' }}</span></td>
                             <td>{{ $user->email }}</td>
                             <td>{{ $user->no_hp }}</td>
                             <td>{{ $user->jabatan }}</td>
                             <td>{{ $user->unit_departemen }}</td>
                             <td>
                                 @if($user->no_batch)
-                                    <span style="background:#eff6ff; color:#3b82f6; padding:0.2rem 0.6rem; border-radius:6px; font-size:0.8rem; font-weight:600;">{{ $user->no_batch }}</span>
+                                    <span class="badge badge-identifier">{{ $user->no_batch }}</span>
                                 @else
                                     <span style="color:#94a3b8; font-size:0.8rem;">—</span>
                                 @endif
@@ -55,7 +57,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" style="text-align: center; color: #94a3b8; padding: 2rem;">
+                            <td colspan="9" style="text-align: center; color: #94a3b8; padding: 2rem;">
                                 🎉 Tidak ada pendaftaran yang menunggu verifikasi.
                             </td>
                         </tr>

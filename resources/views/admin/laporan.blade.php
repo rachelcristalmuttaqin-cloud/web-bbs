@@ -14,10 +14,13 @@
 @endsection
 
 @section('content')
-    <div class="card" style="margin-bottom: 1.25rem;" class="no-print">
+    <div class="card no-print" style="margin-bottom: 1.25rem;">
         <div class="card-header">
-            <span class="card-title">🖨️ Filter Periode Laporan</span>
-            <button onclick="window.print()" class="btn btn-success no-print">🖨️ Cetak / Export PDF</button>
+            <span class="card-title">🖨️ Filter Periode & Ekspor Laporan</span>
+            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                <a href="{{ route('admin.laporan.export_excel', request()->only('start_date', 'end_date')) }}" class="btn btn-success">⬇️ Unduh Excel</a>
+                <button onclick="window.print()" class="btn btn-secondary no-print">🖨️ Cetak / Simpan PDF</button>
+            </div>
         </div>
         <form action="{{ route('admin.laporan.index') }}" method="GET" style="display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap;" class="no-print">
             <div>
@@ -32,6 +35,7 @@
             <button type="submit" class="btn btn-primary">Tampilkan Rekap</button>
             <a href="{{ route('admin.laporan.index') }}" onclick="window.location.href='{{ route('admin.laporan.index') }}'; return false;" class="btn btn-secondary">Reset</a>
         </form>
+        <small style="display:block; color:#64748b; margin-top:0.75rem;">File Excel mengikuti periode yang dipilih dan memuat seluruh data laporan pada periode tersebut.</small>
     </div>
 
     <div class="card">
