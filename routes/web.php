@@ -7,41 +7,6 @@ use Illuminate\Support\Facades\Route;
 
 use Illuminate\Support\Facades\Auth;
 
-// =====================================================================
-// ROUTE SEMENTARA - Undo keputusan terakhir (hapus setelah digunakan!)
-// =====================================================================
-Route::get('/dev-tool-undo-keputusan-q8m3', function () {
-    $kunci = request('kunci');
-    if ($kunci !== 'BBS2025-UNDO') {
-        return response('Akses ditolak.', 403);
-    }
-
-    $lastDecision = \App\Models\KeputusanHes::latest()->first();
-    if (!$lastDecision) {
-        return response()->json(['pesan' => 'Tidak ada keputusan yang bisa di-undo.']);
-    }
-
-    // Kembalikan observasi ke siklus aktif
-    $affected = \App\Models\ObservasiBbs::where('keputusan_hes_id', $lastDecision->id)
-        ->update(['keputusan_hes_id' => null]);
-
-    $info = [
-        'keputusan_id' => $lastDecision->id,
-        'keputusan' => $lastDecision->keputusan,
-        'admin' => $lastDecision->admin_name,
-        'tanggal' => $lastDecision->created_at?->format('d M Y H:i'),
-        'observasi_dikembalikan' => $affected,
-    ];
-
-    // Hapus record keputusan
-    $lastDecision->delete();
-
-    return response()->json([
-        'status' => 'BERHASIL DI-UNDO',
-        'detail' => $info,
-    ]);
-});
-
 // Redirect root URL ke dashboard jika sudah login, atau ke login jika belum
 Route::get('/', function () {
     if (Auth::check()) {
