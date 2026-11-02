@@ -201,9 +201,19 @@
                 <div style="display:grid; gap:0.65rem;">
                     @foreach($decisionHistory as $decision)
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.8rem 0.9rem;">
-                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; gap:0.4rem;">
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:0.4rem;">
                                 <strong>{{ $decision->keputusan === 'lainnya' && $decision->keputusan_custom ? $decision->keputusan_custom : ($decisionLabels[$decision->keputusan] ?? $decision->keputusan) }}</strong>
-                                <span style="color:#64748b; font-size:0.8rem;">{{ $decision->created_at->format('d M Y H:i') }}</span>
+                                <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                                    <span style="color:#64748b; font-size:0.8rem;">{{ $decision->created_at->format('d M Y H:i') }}</span>
+                                    <a
+                                        href="{{ route('admin.c45.keputusan.export', $decision->id) }}"
+                                        style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.75rem;background:linear-gradient(135deg,#0d9488,#0284c7);color:#fff;border-radius:8px;font-size:0.75rem;font-weight:700;text-decoration:none;white-space:nowrap;"
+                                        title="Download laporan Excel keputusan ini untuk presentasi PHR"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        Export Excel
+                                    </a>
+                                </div>
                             </div>
                             <div style="color:#64748b; font-size:0.8rem; margin-top:0.25rem;">Diputuskan oleh {{ $decision->admin_name }} · Berdasarkan {{ $decision->total_observasi }} data (Rendah {{ $decision->jumlah_rendah }}, Sedang {{ $decision->jumlah_sedang }}, Tinggi {{ $decision->jumlah_tinggi }})</div>
                             <div style="font-size:.8rem;margin-top:.3rem;color:{{ $decision->mengikuti_rekomendasi ? '#15803d' : '#475569' }};">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BbsExcelExport;
+use App\Exports\KeputusanHesExport;
 use App\Models\User;
 use App\Models\ObservasiBbs;
 use App\Models\KategoriPerilaku;
@@ -285,6 +286,20 @@ class AdminBbsController extends Controller
         }
 
         return redirect()->route('admin.c45.index')->with('success', 'Keputusan final disimpan untuk '.$decision->total_observasi.' observasi. Data siklus ini sudah ditandai selesai dan tetap tersimpan sebagai data pelatihan/riwayat.');
+    }
+
+    /**
+     * Export Excel Keputusan Final HES (per siklus)
+     */
+    public function exportKeputusanExcel(KeputusanHes $keputusan, KeputusanHesExport $export)
+    {
+        $filePath = $export->create($keputusan);
+        $tanggal  = $keputusan->created_at ? $keputusan->created_at->format('Ymd_His') : now()->format('Ymd_His');
+        $filename = 'Keputusan_HES_' . $tanggal . '.xlsx';
+
+        return response()->download($filePath, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
     }
 
     private function getActiveDecisionCycleSummary(): array

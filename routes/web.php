@@ -85,6 +85,7 @@ Route::middleware('auth')->group(function () {
         // Modul Algoritma C4.5
         Route::get('/c45', [AdminBbsController::class, 'modulC45'])->name('c45.index');
         Route::post('/c45/keputusan', [AdminBbsController::class, 'storeKeputusanHes'])->name('c45.keputusan');
+        Route::get('/c45/keputusan/{keputusan}/export-excel', [AdminBbsController::class, 'exportKeputusanExcel'])->name('c45.keputusan.export');
 
         // Master Data (Kategori & Lokasi)
         Route::get('/master', [AdminBbsController::class, 'masterData'])->name('master.index');

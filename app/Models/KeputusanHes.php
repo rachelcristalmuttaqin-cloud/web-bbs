@@ -30,4 +30,9 @@ class KeputusanHes extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function observasi()
+    {
+        return $this->hasMany(\App\Models\ObservasiBbs::class, 'keputusan_hes_id');
+    }
 }
