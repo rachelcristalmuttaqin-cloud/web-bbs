@@ -8,30 +8,37 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 // =====================================================================
-// ROUTE SEMENTARA - Hapus user Rachel (hapus setelah digunakan!)
-// Akses: /dev-tool-hapus-rachel-x7k9q2
+// ROUTE SEMENTARA - Undo keputusan terakhir (hapus setelah digunakan!)
 // =====================================================================
-Route::get('/dev-tool-hapus-rachel-x7k9q2', function () {
+Route::get('/dev-tool-undo-keputusan-q8m3', function () {
     $kunci = request('kunci');
-    if ($kunci !== 'BBS2025-HAPUS') {
+    if ($kunci !== 'BBS2025-UNDO') {
         return response('Akses ditolak.', 403);
     }
 
-    $users = \App\Models\User::whereRaw("name ILIKE '%rachel%' OR name ILIKE '%cristal%' OR name ILIKE '%muttaqin%'")->get(['id','name','email','role']);
-
-    if ($users->isEmpty()) {
-        return response()->json(['pesan' => 'User tidak ditemukan di database.']);
+    $lastDecision = \App\Models\KeputusanHes::latest()->first();
+    if (!$lastDecision) {
+        return response()->json(['pesan' => 'Tidak ada keputusan yang bisa di-undo.']);
     }
 
-    $dihapus = [];
-    foreach ($users as $u) {
-        $dihapus[] = ['id' => $u->id, 'nama' => $u->name, 'email' => $u->email, 'role' => $u->role];
-        $u->delete();
-    }
+    // Kembalikan observasi ke siklus aktif
+    $affected = \App\Models\ObservasiBbs::where('keputusan_hes_id', $lastDecision->id)
+        ->update(['keputusan_hes_id' => null]);
+
+    $info = [
+        'keputusan_id' => $lastDecision->id,
+        'keputusan' => $lastDecision->keputusan,
+        'admin' => $lastDecision->admin_name,
+        'tanggal' => $lastDecision->created_at?->format('d M Y H:i'),
+        'observasi_dikembalikan' => $affected,
+    ];
+
+    // Hapus record keputusan
+    $lastDecision->delete();
 
     return response()->json([
-        'status' => 'BERHASIL DIHAPUS',
-        'user_dihapus' => $dihapus,
+        'status' => 'BERHASIL DI-UNDO',
+        'detail' => $info,
     ]);
 });
 
