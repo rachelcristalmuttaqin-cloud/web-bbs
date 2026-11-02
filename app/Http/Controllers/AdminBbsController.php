@@ -221,7 +221,7 @@ class AdminBbsController extends Controller
     /**
      * Modul Analytics & Pohon Keputusan C4.5
      */
-    public function modulC45()
+    public function modulC45(Request $request)
     {
         $c45Data = $this->c45Service->getAnalyticsSummary();
         $trainingList = ObservasiBbs::with(['user', 'kategori', 'lokasi', 'validatorRisikoHes'])
@@ -229,11 +229,26 @@ class AdminBbsController extends Controller
             ->latest('risiko_hes_pada')
             ->get();
         $pendingReviewCount = ObservasiBbs::whereNull('keputusan_hes_id')->whereNull('risiko_hes')->count();
-        $decisionHistory = KeputusanHes::query()->latest()->take(10)->get();
+
+        // 5 keputusan terbaru untuk ditampilkan di area form
+        $decisionHistory = KeputusanHes::query()->latest()->take(5)->get();
+
+        // Semua riwayat keputusan dikelompokkan per bulan untuk evaluasi
+        $allDecisionHistory = KeputusanHes::query()->latest()->get();
+        $decisionByMonth = $allDecisionHistory->groupBy(fn ($d) => $d->created_at->format('Y-m'));
+
+        // Filter bulan (opsional dari query string)
+        $filterBulan = $request->query('bulan'); // format: Y-m
+        $availableMonths = $decisionByMonth->keys()->sortDesc()->values();
+
         $cycleSummary = $this->getActiveDecisionCycleSummary();
         $systemRecommendation = $this->buildSystemDecisionRecommendation($c45Data, $cycleSummary);
 
-        return view('admin.c45.index', compact('c45Data', 'trainingList', 'pendingReviewCount', 'decisionHistory', 'systemRecommendation', 'cycleSummary'));
+        return view('admin.c45.index', compact(
+            'c45Data', 'trainingList', 'pendingReviewCount',
+            'decisionHistory', 'decisionByMonth', 'availableMonths', 'filterBulan',
+            'systemRecommendation', 'cycleSummary'
+        ));
     }
 
     public function storeKeputusanHes(Request $request)

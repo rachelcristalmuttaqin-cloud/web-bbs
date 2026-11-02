@@ -175,12 +175,32 @@
                 <input id="keputusan-custom" type="text" name="keputusan_custom" class="form-control" maxlength="255" value="{{ old('keputusan_custom') }}" placeholder="Contoh: lakukan inspeksi bersama pengawas area">
                 @error('keputusan_custom')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
             </div>
-            <div class="form-group" style="margin-bottom:0.85rem;">
-                <label for="catatan-keputusan" class="form-label">Catatan atau alasan (opsional)</label>
-                <textarea id="catatan-keputusan" name="catatan" class="form-control" rows="3" maxlength="3000" placeholder="Tambahkan alasan, ruang lingkup, atau tindak lanjut keputusan.">{{ old('catatan') }}</textarea>
+
+            {{-- Catatan & Alasan Admin HES --}}
+            <div class="form-group" style="margin-bottom:1rem;">
+                <label for="catatan-keputusan" class="form-label" style="font-size:0.875rem; font-weight:700; color:#0f172a;">
+                    📝 Catatan &amp; Alasan Admin HES
+                    <span style="font-weight:400; color:#64748b; font-size:0.8rem;"> — Wajib diisi untuk dokumentasi evaluasi PHR</span>
+                </label>
+                <textarea
+                    id="catatan-keputusan"
+                    name="catatan"
+                    class="form-control"
+                    rows="4"
+                    maxlength="3000"
+                    placeholder="Tulis alasan keputusan, temuan utama yang mendasari keputusan, tindak lanjut yang perlu dilakukan, atau catatan untuk evaluasi bulan berikutnya.&#10;&#10;Contoh: Terdapat 3 observasi risiko tinggi pada area WP-4 terkait penggunaan LOTO. Keputusan: prioritaskan pembinaan kru di area tersebut dan lakukan inspeksi bersama pengawas."
+                    style="min-height:100px; resize:vertical;"
+                >{{ old('catatan') }}</textarea>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:0.3rem;">
+                    <small style="color:#64748b;">Catatan ini akan tersimpan bersama keputusan dan dapat dilihat kembali di Riwayat Evaluasi per Bulan.</small>
+                    <small id="catatanCounter" style="color:#94a3b8;">0 / 3000</small>
+                </div>
                 @error('catatan')<small style="color:#b91c1c;">{{ $message }}</small>@enderror
             </div>
-            <button type="submit" class="btn btn-primary">Simpan Keputusan Final Admin HES</button>
+
+            <button type="submit" class="btn btn-primary" style="width:100%;">
+                💾 &nbsp;Simpan Keputusan Final Admin HES
+            </button>
         </form>
 
         <script>
@@ -192,45 +212,203 @@
                 input.required = isCustom;
             });
             document.getElementById('keputusan')?.dispatchEvent(new Event('change'));
+
+            // Counter karakter catatan
+            const catatanEl = document.getElementById('catatan-keputusan');
+            const counterEl = document.getElementById('catatanCounter');
+            function updateCounter() {
+                const len = catatanEl?.value?.length ?? 0;
+                if (counterEl) {
+                    counterEl.textContent = len + ' / 3000';
+                    counterEl.style.color = len > 2800 ? '#dc2626' : '#94a3b8';
+                }
+            }
+            catatanEl?.addEventListener('input', updateCounter);
+            updateCounter();
         </script>
         @endif
 
+        {{-- Riwayat terbaru (5 keputusan terakhir) --}}
         @if($decisionHistory->isNotEmpty())
-            <div style="border-top:1px solid #e2e8f0; margin-top:1.25rem; padding-top:1rem;">
-                <div style="font-weight:700; color:#0f172a; margin-bottom:0.75rem;">Riwayat keputusan Admin HES</div>
+            <div style="border-top:1px solid #e2e8f0; margin-top:1.5rem; padding-top:1rem;">
+                <div style="font-weight:700; color:#0f172a; margin-bottom:0.75rem;">🕐 5 Keputusan Terbaru</div>
                 <div style="display:grid; gap:0.65rem;">
                     @foreach($decisionHistory as $decision)
                         <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:0.8rem 0.9rem;">
                             <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:0.4rem;">
-                                <strong>{{ $decision->keputusan === 'lainnya' && $decision->keputusan_custom ? $decision->keputusan_custom : ($decisionLabels[$decision->keputusan] ?? $decision->keputusan) }}</strong>
+                                <strong style="color:#0f172a;">{{ $decision->keputusan === 'lainnya' && $decision->keputusan_custom ? $decision->keputusan_custom : ($decisionLabels[$decision->keputusan] ?? $decision->keputusan) }}</strong>
                                 <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                                     <span style="color:#64748b; font-size:0.8rem;">{{ $decision->created_at->format('d M Y H:i') }}</span>
                                     <a
                                         href="{{ route('admin.c45.keputusan.export', $decision->id) }}"
                                         style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.3rem 0.75rem;background:linear-gradient(135deg,#0d9488,#0284c7);color:#fff;border-radius:8px;font-size:0.75rem;font-weight:700;text-decoration:none;white-space:nowrap;"
-                                        title="Download laporan Excel keputusan ini untuk presentasi PHR"
+                                        title="Download laporan Excel untuk presentasi PHR"
                                     >
                                         <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                         Export Excel
                                     </a>
                                 </div>
                             </div>
-                            <div style="color:#64748b; font-size:0.8rem; margin-top:0.25rem;">Diputuskan oleh {{ $decision->admin_name }} · Berdasarkan {{ $decision->total_observasi }} data (Rendah {{ $decision->jumlah_rendah }}, Sedang {{ $decision->jumlah_sedang }}, Tinggi {{ $decision->jumlah_tinggi }})</div>
+                            <div style="color:#64748b; font-size:0.8rem; margin-top:0.25rem;">
+                                Diputuskan oleh <strong>{{ $decision->admin_name }}</strong> · {{ $decision->total_observasi }} data
+                                <span class="badge badge-rendah" style="font-size:0.7rem;">Rendah: {{ $decision->jumlah_rendah }}</span>
+                                <span class="badge badge-sedang" style="font-size:0.7rem;">Sedang: {{ $decision->jumlah_sedang }}</span>
+                                <span class="badge badge-tinggi" style="font-size:0.7rem;">Tinggi: {{ $decision->jumlah_tinggi }}</span>
+                            </div>
                             <div style="font-size:.8rem;margin-top:.3rem;color:{{ $decision->mengikuti_rekomendasi ? '#15803d' : '#475569' }};">
-                                {{ $decision->mengikuti_rekomendasi ? 'Mengikuti saran sistem' : 'Keputusan Admin HES' }}
+                                {{ $decision->mengikuti_rekomendasi ? '✅ Mengikuti saran sistem' : '✏️ Keputusan mandiri Admin HES' }}
                                 @if($decision->rekomendasi_sistem)
                                     · Saran sistem: {{ $decisionLabels[$decision->rekomendasi_sistem] ?? $decision->rekomendasi_sistem }}
                                 @endif
                             </div>
                             @if($decision->catatan)
-                                <div style="color:#334155; font-size:0.85rem; margin-top:0.4rem;">{{ $decision->catatan }}</div>
+                                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.55rem 0.7rem; margin-top:0.5rem; font-size:0.83rem; color:#78350f; line-height:1.55;">
+                                    <strong>📝 Catatan Admin:</strong> {{ $decision->catatan }}
+                                </div>
+                            @else
+                                <div style="color:#94a3b8; font-size:0.78rem; margin-top:0.35rem; font-style:italic;">Tidak ada catatan.</div>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+                @if($availableMonths->count() > 0)
+                    <div style="margin-top:0.75rem; text-align:right;">
+                        <a href="#evaluasi-bulanan" style="font-size:0.82rem; color:#0284c7; font-weight:600; text-decoration:none;">
+                            Lihat semua riwayat evaluasi per bulan ↓
+                        </a>
+                    </div>
+                @endif
+            </div>
+        @endif
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- RIWAYAT EVALUASI PER BULAN -->
+    <!-- ============================================================ -->
+    @if($availableMonths->count() > 0)
+    <div class="card" id="evaluasi-bulanan" style="margin-bottom:1.25rem;">
+        <div class="card-header" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:0.75rem;">
+            <span class="card-title">📅 Riwayat Evaluasi Keputusan per Bulan</span>
+            <form method="GET" action="{{ route('admin.c45.index') }}#evaluasi-bulanan" style="display:flex; align-items:center; gap:0.5rem;">
+                <label style="font-size:0.8rem; font-weight:600; color:#475569;">Filter Bulan:</label>
+                <select name="bulan" onchange="this.form.submit()" style="padding:0.35rem 0.65rem; border:1.5px solid #cbd5e1; border-radius:8px; font-size:0.85rem; color:#0f172a; background:#fff; cursor:pointer;">
+                    <option value="">— Semua Bulan —</option>
+                    @foreach($availableMonths as $ym)
+                        @php
+                            [$thn, $bln] = explode('-', $ym);
+                            $namaBulan = ['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'];
+                        @endphp
+                        <option value="{{ $ym }}" {{ $filterBulan === $ym ? 'selected' : '' }}>
+                            {{ ($namaBulan[$bln] ?? $bln) . ' ' . $thn }}
+                        </option>
+                    @endforeach
+                </select>
+                @if($filterBulan)
+                    <a href="{{ route('admin.c45.index') }}#evaluasi-bulanan" style="font-size:0.8rem; color:#64748b; text-decoration:none; padding:0.35rem 0.5rem;">✕ Reset</a>
+                @endif
+            </form>
+        </div>
+
+        @php
+            $tampilBulan = $filterBulan
+                ? $decisionByMonth->filter(fn($v, $k) => $k === $filterBulan)
+                : $decisionByMonth;
+            $namaBulanMap = ['01'=>'Januari','02'=>'Februari','03'=>'Maret','04'=>'April','05'=>'Mei','06'=>'Juni','07'=>'Juli','08'=>'Agustus','09'=>'September','10'=>'Oktober','11'=>'November','12'=>'Desember'];
+        @endphp
+
+        @foreach($tampilBulan->sortKeysDesc() as $ym => $decisions)
+            @php
+                [$thn, $bln] = explode('-', $ym);
+                $labelBulan = ($namaBulanMap[$bln] ?? $bln) . ' ' . $thn;
+                $totalObs = $decisions->sum('total_observasi');
+                $totalTinggi = $decisions->sum('jumlah_tinggi');
+                $totalSedang = $decisions->sum('jumlah_sedang');
+                $totalRendah = $decisions->sum('jumlah_rendah');
+            @endphp
+
+            <div style="margin-bottom:1.5rem;">
+                {{-- Header bulan --}}
+                <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; background:linear-gradient(135deg,#0d9488,#0284c7); color:#fff; border-radius:12px; padding:0.75rem 1rem; margin-bottom:0.75rem; gap:0.5rem;">
+                    <div>
+                        <div style="font-size:1rem; font-weight:800;">📆 {{ $labelBulan }}</div>
+                        <div style="font-size:0.78rem; opacity:0.88; margin-top:0.15rem;">{{ $decisions->count() }} keputusan · {{ $totalObs }} total observasi diproses</div>
+                    </div>
+                    <div style="display:flex; gap:0.4rem; flex-wrap:wrap;">
+                        <span style="background:rgba(255,255,255,0.18); border-radius:999px; padding:0.2rem 0.65rem; font-size:0.75rem; font-weight:700;">🟢 Rendah: {{ $totalRendah }}</span>
+                        <span style="background:rgba(255,255,255,0.18); border-radius:999px; padding:0.2rem 0.65rem; font-size:0.75rem; font-weight:700;">🟡 Sedang: {{ $totalSedang }}</span>
+                        <span style="background:rgba(255,255,255,0.18); border-radius:999px; padding:0.2rem 0.65rem; font-size:0.75rem; font-weight:700;">🔴 Tinggi: {{ $totalTinggi }}</span>
+                    </div>
+                </div>
+
+                {{-- Daftar keputusan dalam bulan ini --}}
+                <div style="display:grid; gap:0.6rem; padding-left:0.5rem; border-left:3px solid #e2e8f0;">
+                    @foreach($decisions->sortByDesc('created_at') as $decision)
+                        <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:0.9rem 1rem; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+                            {{-- Baris atas: keputusan + tombol export --}}
+                            <div style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:0.5rem;">
+                                <div>
+                                    <div style="font-weight:700; color:#0f172a; font-size:0.92rem;">
+                                        {{ $decision->keputusan === 'lainnya' && $decision->keputusan_custom
+                                            ? $decision->keputusan_custom
+                                            : ($decisionLabels[$decision->keputusan] ?? $decision->keputusan) }}
+                                    </div>
+                                    <div style="font-size:0.78rem; color:#64748b; margin-top:0.15rem;">
+                                        {{ $decision->created_at->format('d M Y, H:i') }} · oleh <strong>{{ $decision->admin_name }}</strong>
+                                    </div>
+                                </div>
+                                <a
+                                    href="{{ route('admin.c45.keputusan.export', $decision->id) }}"
+                                    style="display:inline-flex;align-items:center;gap:0.3rem;padding:0.35rem 0.8rem;background:linear-gradient(135deg,#0d9488,#0284c7);color:#fff;border-radius:8px;font-size:0.75rem;font-weight:700;text-decoration:none;white-space:nowrap;flex-shrink:0;"
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    Export Excel
+                                </a>
+                            </div>
+
+                            {{-- Badge risiko --}}
+                            <div style="display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.5rem;">
+                                <span class="badge badge-rendah" style="font-size:0.72rem;">Rendah: {{ $decision->jumlah_rendah }}</span>
+                                <span class="badge badge-sedang" style="font-size:0.72rem;">Sedang: {{ $decision->jumlah_sedang }}</span>
+                                <span class="badge badge-tinggi" style="font-size:0.72rem;">Tinggi: {{ $decision->jumlah_tinggi }}</span>
+                                <span style="display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:0.72rem;font-weight:700;">
+                                    Total: {{ $decision->total_observasi }} obs
+                                </span>
+                                @if($decision->mengikuti_rekomendasi)
+                                    <span style="display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:999px;background:#f0fdf4;color:#15803d;font-size:0.72rem;font-weight:700;">✅ Ikut saran sistem</span>
+                                @else
+                                    <span style="display:inline-flex;align-items:center;padding:0.18rem 0.55rem;border-radius:999px;background:#f8fafc;color:#475569;font-size:0.72rem;font-weight:700;">✏️ Keputusan mandiri</span>
+                                @endif
+                            </div>
+
+                            {{-- Rekomendasi sistem --}}
+                            @if($decision->rekomendasi_sistem)
+                                <div style="font-size:0.78rem; color:#64748b; margin-top:0.35rem;">
+                                    Saran sistem C4.5: <em>{{ $decisionLabels[$decision->rekomendasi_sistem] ?? $decision->rekomendasi_sistem }}</em>
+                                </div>
+                            @endif
+
+                            {{-- Catatan Admin --}}
+                            @if($decision->catatan)
+                                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:8px; padding:0.6rem 0.75rem; margin-top:0.6rem; font-size:0.83rem; color:#78350f; line-height:1.6;">
+                                    <strong>📝 Catatan &amp; Alasan Admin HES:</strong><br>
+                                    {{ $decision->catatan }}
+                                </div>
+                            @else
+                                <div style="color:#94a3b8; font-size:0.78rem; margin-top:0.4rem; font-style:italic;">Tidak ada catatan yang ditambahkan.</div>
                             @endif
                         </div>
                     @endforeach
                 </div>
             </div>
+        @endforeach
+
+        @if($tampilBulan->isEmpty())
+            <div style="text-align:center; color:#64748b; padding:1.5rem; font-size:0.875rem;">
+                Tidak ada keputusan pada bulan yang dipilih.
+            </div>
         @endif
     </div>
+    @endif
 
     <!-- Training Dataset Table -->
     <div class="card">
