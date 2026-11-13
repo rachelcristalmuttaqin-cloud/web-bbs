@@ -259,13 +259,11 @@ class AdminBbsController extends Controller
             'catatan' => ['nullable', 'string', 'max:3000'],
         ]);
 
-        $decision = DB::transaction(function () use ($request, $validated) {
-            $activeObservations = ObservasiBbs::query()
-                ->whereNull('keputusan_hes_id')
-                ->get();
+        try {
+            $activeObservations = ObservasiBbs::whereNull('keputusan_hes_id')->get();
 
             if ($activeObservations->isEmpty()) {
-                return null;
+                return back()->with('error', 'Belum ada observasi aktif untuk dimasukkan ke keputusan final.');
             }
 
             $cycleSummary = $this->summarizeDecisionCycle($activeObservations);
@@ -274,9 +272,16 @@ class AdminBbsController extends Controller
             $followingRecommendation = $recommendation !== null
                 && $validated['keputusan'] === $recommendation['value'];
 
+            // Cegah foreign key violation jika user_id sesi tidak ditemukan di database
+            $userId = $request->user()?->id;
+            if ($userId && !User::where('id', $userId)->exists()) {
+                $userId = null;
+            }
+            $adminName = $request->user()?->name ?? 'Admin HES';
+
             $decision = KeputusanHes::create([
-                'user_id' => $request->user()->id,
-                'admin_name' => $request->user()->name,
+                'user_id' => $userId,
+                'admin_name' => $adminName,
                 'keputusan' => $validated['keputusan'],
                 'rekomendasi_sistem' => $recommendation['value'] ?? null,
                 'mengikuti_rekomendasi' => $followingRecommendation,
@@ -288,17 +293,15 @@ class AdminBbsController extends Controller
                 'jumlah_tinggi' => $cycleSummary['class_counts']['tinggi'],
             ]);
 
-            ObservasiBbs::whereIn('id', $activeObservations->modelKeys())
+            // Update seluruh observasi siklus aktif dengan id keputusan final
+            ObservasiBbs::whereNull('keputusan_hes_id')
                 ->update(['keputusan_hes_id' => $decision->id]);
 
-            return $decision;
-        });
-
-        if (!$decision) {
-            return back()->with('error', 'Belum ada observasi aktif untuk dimasukkan ke keputusan final.');
+            return redirect()->route('admin.c45.index')->with('success', 'Keputusan final berhasil disimpan untuk '.$decision->total_observasi.' observasi. Data siklus ini sudah ditandai selesai dan tetap tersimpan sebagai data pelatihan/riwayat evaluasi.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Error storeKeputusanHes: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menyimpan keputusan: ' . $e->getMessage())->withInput();
         }
-
-        return redirect()->route('admin.c45.index')->with('success', 'Keputusan final disimpan untuk '.$decision->total_observasi.' observasi. Data siklus ini sudah ditandai selesai dan tetap tersimpan sebagai data pelatihan/riwayat.');
     }
 
     /**
@@ -326,9 +329,11 @@ class AdminBbsController extends Controller
     {
         $counts = ['rendah' => 0, 'sedang' => 0, 'tinggi' => 0];
         foreach ($observations as $observation) {
-            $risk = $observation->risiko_hes ?? $observation->tingkat_risiko;
+            $risk = strtolower(trim($observation->risiko_hes ?? $observation->rekomendasi_risiko ?? $observation->tingkat_risiko ?? 'rendah'));
             if (isset($counts[$risk])) {
                 $counts[$risk]++;
+            } else {
+                $counts['rendah']++;
             }
         }
 
