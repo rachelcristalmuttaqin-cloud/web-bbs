@@ -169,22 +169,17 @@
                             </td>
                             <td>
                                 <span class="badge badge-{{ $obs->rekomendasi_risiko ?? $obs->tingkat_risiko }}">{{ strtoupper($obs->rekomendasi_risiko ?? $obs->tingkat_risiko) }}</span>
-                                @if($obs->risiko_hes)<small style="display:block;color:#64748b;margin-top:.3rem;">Final HES: {{ strtoupper($obs->risiko_hes) }}</small>@endif
                             </td>
                             <td>
-                                <form action="{{ route('admin.observasi.validasi_risiko', $obs->id) }}" method="POST" class="risk-review-inline">
-                                    @csrf
-                                    <select name="risiko_hes" class="form-control" aria-label="Label risiko final HES untuk observasi {{ $obs->id }}" required>
-                                        <option value="">Pilih label</option>
-                                        <option value="rendah" {{ ($obs->risiko_hes ?? $obs->rekomendasi_risiko ?? $obs->tingkat_risiko) === 'rendah' ? 'selected' : '' }}>Rendah</option>
-                                        <option value="sedang" {{ ($obs->risiko_hes ?? $obs->rekomendasi_risiko ?? $obs->tingkat_risiko) === 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                        <option value="tinggi" {{ ($obs->risiko_hes ?? $obs->rekomendasi_risiko ?? $obs->tingkat_risiko) === 'tinggi' ? 'selected' : '' }}>Tinggi</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">{{ $obs->risiko_hes ? 'Perbarui' : 'Simpan' }}</button>
-                                </form>
-                                @if($obs->risiko_hes && !$obs->risiko_hes_oleh)
-                                    <small style="display:block; color:#64748b; margin-top:0.25rem;">Label data pelatihan</small>
-                                @endif
+                                @php
+                                    $finalHesRisk = $obs->risiko_hes ?? $obs->rekomendasi_risiko ?? $obs->tingkat_risiko;
+                                @endphp
+                                <span class="badge badge-{{ $finalHesRisk }}">
+                                    {{ strtoupper($finalHesRisk) }}
+                                </span>
+                                <small style="display:block; color:{{ $obs->risiko_hes_oleh ? '#475569' : '#0d9488' }}; font-weight:600; margin-top:0.3rem;">
+                                    {{ $obs->risiko_hes_oleh ? 'Manual Admin' : '✓ Otomatis Sistem' }}
+                                </small>
                             </td>
                             <td style="font-size: 0.8rem; color: #64748b;">{{ strtoupper($obs->status_tindak_lanjut) }}</td>
                             <td><a href="{{ route('admin.observasi.detail', $obs->id) }}" class="btn btn-sm btn-secondary">Detail</a></td>
