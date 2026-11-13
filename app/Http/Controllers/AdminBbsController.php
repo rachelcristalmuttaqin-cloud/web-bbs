@@ -318,6 +318,24 @@ class AdminBbsController extends Controller
         ])->deleteFileAfterSend(true);
     }
 
+    /**
+     * Batalkan keputusan final dan kembalikan semua data observasi ke siklus aktif.
+     */
+    public function batalKeputusanHes($id)
+    {
+        try {
+            $decision = KeputusanHes::findOrFail($id);
+            $totalObs = ObservasiBbs::where('keputusan_hes_id', $decision->id)
+                ->update(['keputusan_hes_id' => null]);
+
+            $decision->delete();
+
+            return redirect()->route('admin.c45.index')->with('success', 'Keputusan final berhasil dibatalkan. Sebanyak ' . $totalObs . ' data observasi telah dikembalikan ke siklus aktif.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Gagal membatalkan keputusan: ' . $e->getMessage());
+        }
+    }
+
     private function getActiveDecisionCycleSummary(): array
     {
         $observations = ObservasiBbs::query()->whereNull('keputusan_hes_id')->get();
