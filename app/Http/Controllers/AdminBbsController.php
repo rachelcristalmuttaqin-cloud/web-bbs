@@ -262,7 +262,6 @@ class AdminBbsController extends Controller
         $decision = DB::transaction(function () use ($request, $validated) {
             $activeObservations = ObservasiBbs::query()
                 ->whereNull('keputusan_hes_id')
-                ->lockForUpdate()
                 ->get();
 
             if ($activeObservations->isEmpty()) {
@@ -275,7 +274,7 @@ class AdminBbsController extends Controller
             $followingRecommendation = $recommendation !== null
                 && $validated['keputusan'] === $recommendation['value'];
 
-            $decision = KeputusanHes::query()->create([
+            $decision = KeputusanHes::create([
                 'user_id' => $request->user()->id,
                 'admin_name' => $request->user()->name,
                 'keputusan' => $validated['keputusan'],
@@ -289,8 +288,7 @@ class AdminBbsController extends Controller
                 'jumlah_tinggi' => $cycleSummary['class_counts']['tinggi'],
             ]);
 
-            ObservasiBbs::query()
-                ->whereIn('id', $activeObservations->modelKeys())
+            ObservasiBbs::whereIn('id', $activeObservations->modelKeys())
                 ->update(['keputusan_hes_id' => $decision->id]);
 
             return $decision;

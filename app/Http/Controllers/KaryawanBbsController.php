@@ -131,6 +131,11 @@ class KaryawanBbsController extends Controller
             'saran' => $request->saran,
             'tingkat_risiko' => $predictedRisk,
             'rekomendasi_risiko' => $predictedRisk,
+            // Auto-validasi: hasil prediksi C4.5 langsung menjadi label risiko HES
+            // Admin HES tetap dapat mengubah jika diperlukan melalui halaman detail observasi
+            'risiko_hes' => $predictedRisk,
+            'risiko_hes_oleh' => null,
+            'risiko_hes_pada' => now(),
             'status_tindak_lanjut' => 'open',
         ]);
 

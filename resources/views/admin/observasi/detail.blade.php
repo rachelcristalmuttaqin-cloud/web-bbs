@@ -96,7 +96,7 @@
             </div>
             <div class="hes-review-body">
             <p class="hes-review-intro">
-                Sistem menentukan Safe/At-Risk dari checklist. Tingkat risiko mengikuti pola C4.5 jika data label HES cukup; jika belum, sistem memakai aturan dasar. Periksa rekomendasi, lalu simpan pendapat final Admin HES; label risiko final menjadi data pelatihan berikutnya.
+                Sistem secara otomatis mengklasifikasikan perilaku (Safe/At-Risk) dari checklist dan menetapkan tingkat risiko berdasarkan pola C4.5. <strong>Hasil validasi risiko sudah terisi otomatis dari sistem.</strong> Admin HES dapat mengubah jika diperlukan berdasarkan pemeriksaan lapangan.
             </p>
             <div class="hes-recommendation">
                 <span class="hes-recommendation-label">Rekomendasi dari sistem</span>
@@ -128,7 +128,7 @@
             </form>
             @if($observasi->risiko_hes)
                 <div class="hes-validation-status">
-                    <strong>{{ $observasi->risiko_hes_oleh ? 'Label final HES tersimpan' : 'Label risiko tersimpan' }}</strong>
+                    <strong>{{ $observasi->risiko_hes_oleh ? 'Divalidasi manual oleh Admin HES' : '✅ Tervalidasi otomatis oleh sistem C4.5' }}</strong>
                     <span class="badge badge-{{ $observasi->risiko_hes }}">{{ strtoupper($observasi->risiko_hes) }}</span>
                 </div>
             @else
