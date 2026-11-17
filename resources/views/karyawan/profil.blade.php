@@ -24,7 +24,8 @@
 
                 <div class="form-group">
                     <label class="form-label">No. Telepon / HP</label>
-                    <input type="text" name="no_hp" class="form-control" value="{{ old('no_hp', $user->no_hp) }}" required>
+                    <input type="tel" name="no_hp" class="form-control" value="{{ old('no_hp', $user->no_hp) }}" required inputmode="numeric" pattern="[0-9]+" maxlength="20" placeholder="08xxxxxxxxxx" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                    <small style="font-size: 0.775rem; color: #94a3b8; margin-top: 0.25rem; display: block;">Hanya boleh berisi angka (contoh: 081234567890).</small>
                 </div>
 
                 <div class="form-group">

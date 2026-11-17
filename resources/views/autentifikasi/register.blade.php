@@ -442,7 +442,7 @@
 
                 <div class="form-group">
                     <label for="no_hp" class="form-label">No. Telepon / HP</label>
-                    <input type="text" id="no_hp" name="no_hp" class="form-input" placeholder="081234567890" value="{{ old('no_hp') }}" required>
+                    <input type="tel" id="no_hp" name="no_hp" class="form-input" placeholder="081234567890" value="{{ old('no_hp') }}" required inputmode="numeric" pattern="[0-9]+" maxlength="20" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                 </div>
 
                 <div class="form-group">

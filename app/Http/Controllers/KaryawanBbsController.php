@@ -193,11 +193,21 @@ class KaryawanBbsController extends Controller
 
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'no_hp' => ['required', 'string', 'max:20'],
+            'no_hp' => ['required', 'string', 'regex:/^[0-9]+$/', 'min:8', 'max:20'],
             'jabatan' => ['required', 'string', 'max:255'],
             'unit_departemen' => ['required', 'string', 'max:255'],
             'no_batch' => ['nullable', 'string', 'max:50'],
             'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'no_hp.required' => 'Nomor HP wajib diisi.',
+            'no_hp.regex' => 'Nomor HP hanya boleh berisi angka.',
+            'no_hp.min' => 'Nomor HP minimal 8 digit.',
+            'no_hp.max' => 'Nomor HP maksimal 20 digit.',
+            'jabatan.required' => 'Jabatan wajib diisi.',
+            'unit_departemen.required' => 'Unit / Departemen wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
         $data = [
